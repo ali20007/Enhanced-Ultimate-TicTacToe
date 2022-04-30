@@ -1,10 +1,9 @@
 #include <iostream>
-using namespace std;
-#include <cstdlib>
-#include <fstream>
-#include <stdio.h>
-#include <stdlib.h>
 #include <sstream>
+#include <chrono>
+#include <unistd.h>
+using namespace std;
+
 bool computerturn = false;
 bool computerisplaying = false;
 enum Piece {TTTS_BLANK, TTTS_O, TTTS_X};//"Enum" means the variable must have one of the given values only -- gives the status of each cell
@@ -25,14 +24,13 @@ private:
 };
 
 
-
 TicTacToeBoard::TicTacToeBoard()
 {
     initBoard();
     _gameStatus = NONE;
 }
 
-void TicTacToeBoard::initBoard()//initiating the small board
+void TicTacToeBoard::initBoard()//initiating the small board and giving cell blank status
 {
     for(int x = 0; x < 3; x++)
         for(int y = 0; y < 3; y++)
@@ -54,7 +52,7 @@ int TicTacToeBoard::Move(int cell, Piece _turn)//the next move to be performed
         _board[cell/3][cell%3] = _turn;//turn will be given according to x or o
         return 1;
     }
-    return 0;  // cell already occupied
+    return 0;  // cell occupied
 }
 
 Status TicTacToeBoard::update()//the function to check winning conditions
@@ -64,7 +62,7 @@ Status TicTacToeBoard::update()//the function to check winning conditions
     for(int i = 0; i < 3; i++)
         for(int j = 0; j < 3; j++)
             if(_board[i][j] == TTTS_BLANK)
-                tie = false;
+                tie = false;//checks if the board is full, if yes then it is a tie
 
     if(tie) {
         _gameStatus = TIE;
@@ -91,8 +89,8 @@ Status TicTacToeBoard::update()//the function to check winning conditions
     /* COLUMNS */
     for(int column = 0; column < 3; column++)
     {
-        if(_board[0][column] == _board[1][column] \
-                && _board[0][column] != TTTS_BLANK \
+        if(_board[0][column] == _board[1][column]
+                && _board[0][column] != TTTS_BLANK
                 && _board[1][column] == _board[2][column]) {
             _gameStatus = _board[0][column] == TTTS_X ? X : O;
             return _gameStatus; // return winner
@@ -103,7 +101,7 @@ Status TicTacToeBoard::update()//the function to check winning conditions
     for(int row = 0; row < 3; row++)
     {
         if(_board[row][0] != TTTS_BLANK
-            && _board[row][0] == _board[row][1] \
+            && _board[row][0] == _board[row][1]
             && _board[row][1] == _board[row][2]) {
             _gameStatus = _board[row][0] == TTTS_X ? X : O;
             return _gameStatus; // return winner
@@ -114,7 +112,7 @@ Status TicTacToeBoard::update()//the function to check winning conditions
 }
 
 
-//The start of the big board declaration
+//The start of the full board declaration
 class UltimateTicTacToe
 {
 public:
@@ -343,24 +341,23 @@ int get_int(int minn,int maxx, string prompt)// A function used as test case for
     string str_number;
 
     while(true) {
-
         cout << prompt;
-        getline(cin, str_number); //get string input
-        stringstream convert(str_number); //turns the string into a stream
-
-        //checks for complete conversion to integer and checks for minimum value
-        if(convert >> ret_integer && !(convert >> str_number) && ret_integer >= minn && ret_integer <=maxx) return ret_integer;
-
+        getline(cin, str_number); //get input as a string until we press enter
+        stringstream convert(str_number); //A built in function in the stringstream class that turns the numeric string into an integer number
+        //checks for complete conversion to integer and checks for minimum value:
+        if(convert >> ret_integer && !(convert >> str_number) && ret_integer >= minn && ret_integer <=maxx)
+            return ret_integer;
         cin.clear(); //just in case an error occurs with cin (eof(), etc)
-        cerr << "Input must be between " << minn << " and "<< maxx << "\n";
+        cerr << "Input must be an integer between " << minn << " and "<< maxx << "\n";//cerr is the built-in error function that displays the error message immediately
     }
 }
 
 
 int main()
 {
+    auto start = chrono::steady_clock::now();//The time calculating function which is used here because the longest function to take time is the update function
     UltimateTicTacToe board;
-    board.displayBoards();
+    board.displayBoards();//Display the 9 boards and their cells
     cout<<"Choose Playing Mode: 1)Player vs Computer   2)Player vs Player ";
     int mode = get_int(1,2,"");
     if (mode == 1)
@@ -368,10 +365,10 @@ int main()
     cout<<endl;
     cout << "Enter the board number to start with: ";
     int board_no = get_int(1,9,"");
-    board.setBoardNo(board_no-1); // minus 1 for zero-based indexing
+    board.setBoardNo(board_no-1); // minus 1 for zero-based indexing in arrays
     int cell;
     bool playing = true;
-    int round = 1;
+    int round = 1;//a variable to indicate the round when the computer is playing
     while(playing)
     {
         cout << "Player " << board.getTurn() << " select cell" << endl;
@@ -381,8 +378,8 @@ int main()
         else
         while(1)
         {
-            if(round%2==0)
-                {cell = rand()%9;//used initially for making the computer play
+            if(round%2==0)//the odd rounds are for the computer and even rounds for the player
+                {cell = rand()%9;//used for making the computer play in a random cell
                 computerturn = true;}
             else
                 cell = get_int(1,9,"");
@@ -390,19 +387,19 @@ int main()
             break;
 
         }
-        board.Move(cell);
-        board.displayBoards();
-        int status = board.update();
-        computerturn = false;
+    board.Move(cell);
+    board.displayBoards();
+    int status = board.update();
+    computerturn = false;
 
-        switch(status)
+    switch(status)
         {
             case X:
-                cout << "X has won!" << endl;
+                cout << "X player has won!" << endl;
                 playing = false;
                 break;
             case O:
-                cout << "O has won!" << endl;
+                cout << "O player has won!" << endl;
                 playing = false;
                 break;
             case TIE:
@@ -412,9 +409,9 @@ int main()
             default:
                 break;
         }
-        if(board.boardFinished())
-            board.selectNewBoard();
+    if(board.boardFinished())
+        board.selectNewBoard();
     }
-
+auto end = chrono::steady_clock::now();
+    cout << "Elapsed time in nanoseconds: "<< chrono::duration_cast<chrono::nanoseconds>(end - start).count()<< " ns" << endl;
 }
-//Shit
