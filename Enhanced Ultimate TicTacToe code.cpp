@@ -1,3 +1,9 @@
+/*Enhanced Ultimate TicTacToe Game by Omar Kamal ibrahim -- Omar Mohamed Mahmoud -- Ali Ashraf Ali
+Game Description: It is the Normal X-O game but with 9 boards. In order to win, you have to complete 3 boards as rows or as columns or as diagonals.
+Rules: You will first choose a board and a cell to start with, the cell you play at is the same number of the board the next player will play at and the
+cell that he chooses will be the board  will play at etc.
+It has two modes of playing, 1)Against the computer or 2)Against A friend.
+*/
 #include <iostream>
 #include <sstream>
 #include <chrono>
@@ -355,7 +361,7 @@ int get_int(int minn,int maxx, string prompt)// A function used as test case for
 
 int main()
 {
-    auto start = chrono::steady_clock::now();//The time calculating function which is used here because the longest function to take time is the update function
+     auto start = chrono::steady_clock::now();//The time calculating function which is used here because the longest function to take time is the update function
     UltimateTicTacToe board;
     board.displayBoards();//Display the 9 boards and their cells
     cout<<"Choose Playing Mode: 1)Player vs Computer   2)Player vs Player ";
