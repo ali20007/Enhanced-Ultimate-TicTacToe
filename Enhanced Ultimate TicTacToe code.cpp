@@ -9,6 +9,7 @@ struct board
 #include <sstream>
 #include <chrono>
 #include <unistd.h>
+#include<time.h>
 using namespace std;
 
 bool computerturn = false;
@@ -362,7 +363,8 @@ int get_int(int minn,int maxx, string prompt)// A function used as test case for
 
 int main()
 {
-     auto start = chrono::steady_clock::now();//The time calculating function which is used here because the longest function to take time is the update function
+    auto start = chrono::steady_clock::now();//The time calculating function which is used here because the longest function to take time is the update function
+    srand(time(0));
     UltimateTicTacToe board;
     board.displayBoards();//Display the 9 boards and their cells
     cout<<"Choose Playing Mode: 1)Player vs Computer   2)Player vs Player ";
